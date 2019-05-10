@@ -2,7 +2,7 @@
 
 import tensorflow as tf
 import utils
-#import cnn
+import cnn
 
 
 FLAGS = tf.app.flags.FLAGS
@@ -29,9 +29,7 @@ class LSTMOCR(object):
     def _build_cnn(self, x):
         # CNN part
 
-        # put your own cnn here
-
-        #x, seq_len = cnn.convnet_layers(x, FLAGS.image_width, self.mode)        
+        x, seq_len = cnn.convnet_layers(x, FLAGS.image_width, self.mode)
         #print(x.shape, seq_len)
 
         return x, seq_len

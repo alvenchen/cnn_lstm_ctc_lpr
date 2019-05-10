@@ -243,8 +243,8 @@ def main(_):
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--restore', type=bool, default=False)    
-    parser.add_argument('--checkpoint_name', type=str, default='./checkpoint/ocr-model-101587')
+    parser.add_argument('--restore', action='store_true')
+    parser.add_argument('--checkpoint_name', type=str, default='./model/ocr-model-101587')
     parser.add_argument('--train_dir', type=str, default='../plate_pro_images/train/')
     parser.add_argument('--val_dir', type=str, default='../plate_pro_images/val/')
     parser.add_argument('--infer_dir', type=str, default='../plate_pro_images/infer/')
@@ -262,7 +262,8 @@ def parse_arguments(argv):
     tf.app.flags.DEFINE_integer('num_gpus', args.num_gpus, 'num of gpus')
 
     tf.app.flags.DEFINE_string('log_dir', './log', 'the logging dir')
-
+    tf.app.flags.DEFINE_string('checkpoint_dir', './model', 'the checkpoint dir')
+    
 
     tf.app.flags.DEFINE_float('initial_learning_rate', 1e-3, 'inital lr')
     tf.app.flags.DEFINE_integer('image_height', 32, 'image height')
