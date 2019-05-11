@@ -25,26 +25,26 @@ TODO
 
 Data
 ---------
-I did't found much useful data for both detection and recognition, one of the best is [功能车牌图像库数据](http://www.openits.cn/openData/index.jhtml)
+I did't found much useful data for both detection and recognition, except [功能车牌图像库数据](http://www.openits.cn/openData/index.jhtml)
 
 We will thankful if you share some infomation.
 
 
 Train
 ---------
-```python
+```bash
 python main.py --mode train --train_dir 'your_trainning_data_dir' --val_dir 'validation_dir'
 ```
 
 Test
 ---------
-```python
+```bash
 python main.py --mode infer --infer_dir 'your_test_data_dir' --restore 
 ```
 
 API
 ---------
-```python
+```bash
 python api.py 
 ```
 
