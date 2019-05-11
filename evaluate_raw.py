@@ -9,24 +9,27 @@ import cv2
 import json
 import numpy as np
 import utils
-import cnn_lstm_otc_ocr
+import lstm_ctc
 import tensorflow as tf
+import argparse
 
+utils.init_params()
 
-
-data_dir = '../功能车牌图像库数据/'
-
-def get_files(data_dir):
+def get_files(data_dir, subdir=False):
     files_save = [] 
 
-    dirs = os.listdir(data_dir)
-    for d in dirs:
-        # 只检测普通车牌，不检测功能车牌
-        if d.decode('utf-8')[0] != u"“":
-            continue
-            pass
-        full_path = os.path.join(data_dir, d)
-        files = glob.glob("{}/*.jpg".format(full_path))
+    if subdir:
+        dirs = os.listdir(data_dir)
+        for d in dirs:
+            # 只检测普通车牌，不检测功能车牌
+            if d.decode('utf-8')[0] != u"“":
+                continue
+                pass
+            full_path = os.path.join(data_dir, d)
+            files = glob.glob("{}/*.jpg".format(full_path))
+            files_save += files
+    else:
+        files = glob.glob("{}/*.jpg".format(data_dir))
         files_save += files
 
     return files_save
@@ -65,8 +68,7 @@ def recognize(image, plate_rec_model):
 
         if len(decoded) > 0:
 
-            res_json = {}
-            # TODO confidence
+            res_json = {}            
             res_json["Name"] = decoded[0]
             #res_json["Confidence"] = confidence;
             res_json["x"] = int(rect[0])
@@ -80,7 +82,7 @@ def recognize(image, plate_rec_model):
 
 class PlateRecModel():
     def __init__(self, model_path):
-        self.model = cnn_lstm_otc_ocr.LSTMOCR("val")
+        self.model = lstm_ctc.LSTMOCR("val")
         self.model.build_graph()
 
         config = tf.ConfigProto(allow_soft_placement=True)
@@ -115,19 +117,20 @@ class PlateRecModel():
 
         return decoded_expression
 
-def main(arg):
-    files = get_files(data_dir)
+def main(args):    
+
+    files = get_files(args.data_dir)
 
     n = len(files)
     print(n)
 
     names = get_files_name(files)
 
-    plate_rec_model = PlateRecModel("./checkpoint/ocr-model-101587")
+    plate_rec_model = PlateRecModel(args.checkpoint_name)
 
     false_count = n
-    not_rec = 0
-    align_error = 0
+    not_rec = 0    
+    rec_name = []
 
     for i, f in enumerate(files):
         img = cv2.imread(f)
@@ -141,16 +144,29 @@ def main(arg):
         if len(res_json) == 0 :
             not_rec += 1
             continue
-        elif len(res_json) > 1:
-            print('file : {}  rec > 1 : {}'.format(names[i], len(res_json)))
-            align_error += 1
+
         if res_json[0]["Name"] == label:
             false_count -= 1
-        
     
-    print("not rec : {}".format(not_rec))
-    print("align_error : {} - {}".format(align_error, float(align_error) / n))
+        for st in res_json:            
+            rec_name.append([f, st["Name"]])
+
+    with open('./result.txt', 'wb') as f:
+        for name in rec_name:
+            f.write("{} -- {}\n".format(name[0], name[1].encode('utf8')))
+            
+    
+    print("not rec : {}".format(not_rec))    
     print("precision : {}".format(float(n - false_count) / n))
 
+def parse_arguments(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--checkpoint_name', type=str, default='./model/ocr-model-101587')
+    parser.add_argument('--data_dir', type=str, default='./images/')
+
+    args = parser.parse_args(argv)    
+
+    return args
+
 if __name__ == '__main__':
-    tf.app.run()
+    main(parse_arguments(sys.argv[1:]))

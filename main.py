@@ -152,9 +152,9 @@ def val(model, sess, img_path):
 
 
 def infer(model, sess, img_path):
-    # imgList = load_img_path('/home/yang/Downloads/FILE/ml/imgs/image_contest_level_1_validate/')
+    
     imgList = utils.load_img_path(img_path)
-    print(imgList[:5])
+    #print(imgList[:5])
 
     total_steps = (len(imgList) - 1) / FLAGS.batch_size + 1
 
@@ -245,44 +245,23 @@ def parse_arguments(argv):
     
     parser.add_argument('--restore', action='store_true')
     parser.add_argument('--checkpoint_name', type=str, default='./model/ocr-model-101587')
-    parser.add_argument('--train_dir', type=str, default='../plate_pro_images/train/')
-    parser.add_argument('--val_dir', type=str, default='../plate_pro_images/val/')
-    parser.add_argument('--infer_dir', type=str, default='../plate_pro_images/infer/')
+    parser.add_argument('--train_dir', type=str, default='../plate_images/train/')
+    parser.add_argument('--val_dir', type=str, default='../plate_images/val/')
+    parser.add_argument('--infer_dir', type=str, default='./images/')
     parser.add_argument('--mode', type=str, default='train')
     parser.add_argument('--num_gpus', type=int, default=1)
 
     args = parser.parse_args(argv)
-
-
+    
     tf.app.flags.DEFINE_string('checkpoint_name', args.checkpoint_name, '')
     tf.app.flags.DEFINE_string('train_dir', args.train_dir, '')
     tf.app.flags.DEFINE_string('val_dir', args.val_dir, '')
     tf.app.flags.DEFINE_string('infer_dir', args.infer_dir, '')
     tf.app.flags.DEFINE_string('mode', args.mode, 'train, val or infer')
     tf.app.flags.DEFINE_integer('num_gpus', args.num_gpus, 'num of gpus')
-
-    tf.app.flags.DEFINE_string('log_dir', './log', 'the logging dir')
-    tf.app.flags.DEFINE_string('checkpoint_dir', './model', 'the checkpoint dir')
+    tf.app.flags.DEFINE_bool('restore', args.restore, '')
     
-
-    tf.app.flags.DEFINE_float('initial_learning_rate', 1e-3, 'inital lr')
-    tf.app.flags.DEFINE_integer('image_height', 32, 'image height')
-    tf.app.flags.DEFINE_integer('image_width', 112, 'image width')
-    tf.app.flags.DEFINE_integer('image_channel', 3, 'image channels as input')
-    tf.app.flags.DEFINE_integer('cnn_count', 6, 'count of cnn module to extract image features.')
-    tf.app.flags.DEFINE_integer('out_channels', 128, 'output channels of last layer in CNN')
-    tf.app.flags.DEFINE_integer('num_hidden', 128, 'number of hidden units in lstm')
-    tf.app.flags.DEFINE_float('output_keep_prob', 0.8, 'output_keep_prob in lstm')
-    tf.app.flags.DEFINE_integer('num_epochs', 10000, 'maximum epochs')
-    tf.app.flags.DEFINE_integer('batch_size', 1, 'the batch_size')
-    tf.app.flags.DEFINE_integer('save_steps', 10000, 'the step to save checkpoint')
-    tf.app.flags.DEFINE_float('leakiness', 0.01, 'leakiness of lrelu')
-    tf.app.flags.DEFINE_float('decay_rate', 0.98, 'the lr decay rate')
-    tf.app.flags.DEFINE_float('beta1', 0.9, 'parameter of adam optimizer beta1')
-    tf.app.flags.DEFINE_float('beta2', 0.999, 'adam parameter beta2')
-    tf.app.flags.DEFINE_integer('decay_steps', 50000, 'the lr decay_step for optimizer')
-    tf.app.flags.DEFINE_float('momentum', 0.9, 'the momentum')
-
+    utils.init_params()
 
     return args
 

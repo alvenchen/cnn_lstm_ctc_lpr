@@ -6,6 +6,7 @@ import tensorflow as tf
 import cv2
 import glob
 
+FLAGS = tf.app.flags.FLAGS
 
 charset = [ u"京", u"沪", u"津", u"渝", u"冀", u"晋", u"蒙", u"辽",             # 0 - 7
             u"吉", u"黑", u"苏", u"浙", u"皖", u"闽", u"赣", u"鲁",             # 8 - 15
@@ -33,6 +34,30 @@ decode_maps[SPACE_INDEX] = SPACE_TOKEN
 
 num_classes = len(charset) + 1
 maxPrintLen = 10
+
+def init_params():        
+
+    tf.app.flags.DEFINE_string('log_dir', './log', 'the logging dir')
+    tf.app.flags.DEFINE_string('checkpoint_dir', './model', 'the checkpoint dir')
+
+    tf.app.flags.DEFINE_float('initial_learning_rate', 1e-3, 'inital lr')
+    tf.app.flags.DEFINE_integer('image_height', 32, 'image height')
+    tf.app.flags.DEFINE_integer('image_width', 112, 'image width')
+    tf.app.flags.DEFINE_integer('image_channel', 3, 'image channels as input')
+    tf.app.flags.DEFINE_integer('cnn_count', 6, 'count of cnn module to extract image features.')
+    tf.app.flags.DEFINE_integer('out_channels', 128, 'output channels of last layer in CNN')
+    tf.app.flags.DEFINE_integer('num_hidden', 128, 'number of hidden units in lstm')
+    tf.app.flags.DEFINE_float('output_keep_prob', 0.8, 'output_keep_prob in lstm')
+    tf.app.flags.DEFINE_integer('num_epochs', 10000, 'maximum epochs')
+    tf.app.flags.DEFINE_integer('batch_size', 1, 'the batch_size')
+    tf.app.flags.DEFINE_integer('save_steps', 10000, 'the step to save checkpoint')
+    tf.app.flags.DEFINE_float('leakiness', 0.01, 'leakiness of lrelu')
+    tf.app.flags.DEFINE_float('decay_rate', 0.98, 'the lr decay rate')
+    tf.app.flags.DEFINE_float('beta1', 0.9, 'parameter of adam optimizer beta1')
+    tf.app.flags.DEFINE_float('beta2', 0.999, 'adam parameter beta2')
+    tf.app.flags.DEFINE_integer('decay_steps', 50000, 'the lr decay_step for optimizer')
+    tf.app.flags.DEFINE_float('momentum', 0.9, 'the momentum')
+
 
 def get_plate_image(image_name):
     #im = cv2.imread(image_name, cv2.IMREAD_GRAYSCALE).astype(np.float32) / 255.
